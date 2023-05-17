@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('geoobjects', function (Blueprint $table) {
+        Schema::create('beds', function (Blueprint $table) {
             $table->id();
-            // $table->string('name');
-            $table->foreignId('city_id')->nullable()->constrained();
-            $table->string('name');
-            $table->decimal('lat', 10, 7)->nullable();
-            $table->decimal('long', 10, 7)->nullable();
+            $table->string('name')->nullable();
+            $table->foreignId('room_id')->constrained();
+            $table->foreignId('bed_type_id')->nullable()->constrained();
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('geoobjects');
+        Schema::dropIfExists('beds');
     }
 };

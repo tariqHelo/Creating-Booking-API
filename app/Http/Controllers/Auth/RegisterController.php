@@ -15,6 +15,8 @@ class RegisterController extends Controller
     
     public function __invoke(Request $request){
 
+      //  dd($request->all());
+
         $request->validate([
             'name' => ['required', 'string', 'max:255' ],
             'email' => ['required', 'string', 'email' , 'max:255' , 'unique:users'],
@@ -24,12 +26,12 @@ class RegisterController extends Controller
 
 
         $user = User::create([
-          'name' => $request->name,
-          'email' => $request->email,
-          'password' => Hash::make($request->password),
-          'role_id' => $request->role_id,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id'=> $request->role_id,
         ]);
-
+        
         return response()->json([
             'access_token' => $user->createToken('client')->plainTextToken,
         ]);

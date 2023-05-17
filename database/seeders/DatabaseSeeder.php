@@ -19,12 +19,17 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        $this->call(RoleSeeder::class);
-        $this->call(AdminUserSeeder::class);
-        $this->call(PermissionSeeder::class);
+        //add factory for Property
+       //  \App\Models\Property::factory(10)->create();
+        //add factory for Apartment
+            \App\Models\Apartment::factory(10)->create();
+
+        // $this->call(RoleSeeder::class);
+        // $this->call(AdminUserSeeder::class);
+        // $this->call(PermissionSeeder::class);
  
-        $this->call(CountrySeeder::class);
-        $this->call(CitySeeder::class);
-        $this->call(GeoobjectSeeder::class);
+        // $this->call(CountrySeeder::class);
+        // $this->call(CitySeeder::class);
+        // $this->call(GeoobjectSeeder::class);
     }
 }

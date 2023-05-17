@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use App\Models\BedType;
+
 return new class extends Migration
 {
     /**
@@ -11,15 +13,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('geoobjects', function (Blueprint $table) {
+        Schema::create('bed_types', function (Blueprint $table) {
             $table->id();
-            // $table->string('name');
-            $table->foreignId('city_id')->nullable()->constrained();
             $table->string('name');
-            $table->decimal('lat', 10, 7)->nullable();
-            $table->decimal('long', 10, 7)->nullable();
             $table->timestamps();
         });
+ 
+        BedType::create(['name' => 'Single bed']);
+        BedType::create(['name' => 'Large double bed']);
+        BedType::create(['name' => 'Extra large double bed']);
+        BedType::create(['name' => 'Sofa bed']);
     }
 
     /**
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('geoobjects');
+        Schema::dropIfExists('bed_types');
     }
 };

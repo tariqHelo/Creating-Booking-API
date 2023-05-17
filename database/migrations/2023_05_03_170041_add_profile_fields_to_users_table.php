@@ -22,10 +22,10 @@ return new class extends Migration
             $table->foreignId('invoice_country_id')->nullable()
                 ->constrained('countries');
 
-                $table->string('display_name')->nullable();
-                $table->string('phone_number')->nullable();
-                $table->timestamp('phone_verified_at')->nullable();
-                $table->string('photo')->nullable();
+                // $table->string('display_name')->nullable();
+                // $table->string('phone_number')->nullable();
+                // $table->timestamp('phone_verified_at')->nullable();
+                // $table->string('photo')->nullable();
         });
     }
 

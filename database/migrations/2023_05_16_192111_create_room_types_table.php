@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use App\Models\RoomType;
+
 return new class extends Migration
 {
     /**
@@ -11,15 +13,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('geoobjects', function (Blueprint $table) {
+        Schema::create('room_types', function (Blueprint $table) {
             $table->id();
-            // $table->string('name');
-            $table->foreignId('city_id')->nullable()->constrained();
             $table->string('name');
-            $table->decimal('lat', 10, 7)->nullable();
-            $table->decimal('long', 10, 7)->nullable();
             $table->timestamps();
         });
+
+
+        RoomType::create(['name' => 'Bedroom']);
+        RoomType::create(['name' => 'Living room']);
     }
 
     /**
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('geoobjects');
+        Schema::dropIfExists('room_types');
     }
 };
