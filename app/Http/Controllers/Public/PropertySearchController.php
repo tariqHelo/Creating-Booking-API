@@ -17,11 +17,12 @@ class PropertySearchController extends Controller
     {
 
         //dd($request->all());
-        $properties =  Property::with([
-            'city',
-            'apartments.apartment_type',
-            'apartments.rooms.beds.bed_type'
-        ])
+        $properties = Property::query()
+            ->with([
+                'city',
+                'apartments.apartment_type',
+                'apartments.rooms.beds.bed_type'
+            ])
             // conditions will come here
             ->when($request->has('city_id'), function ($query) use ($request) {
                 $query->where('city_id', $request->city_id);
@@ -52,6 +53,8 @@ class PropertySearchController extends Controller
                 });
             })
             ->get();
+
+           // return $properties;
 
             return PropertySearchResource::collection($properties);
 

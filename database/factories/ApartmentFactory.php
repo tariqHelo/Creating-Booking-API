@@ -23,6 +23,8 @@ class ApartmentFactory extends Factory
                 'name' => fake()->text(20),
                 'capacity_adults' => rand(1, 5),
                 'capacity_children' => rand(1, 5),
+                'size' => rand(20, 100),
+                'bathrooms' => rand(1, 3),
             ];
     
     }

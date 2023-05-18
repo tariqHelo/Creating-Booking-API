@@ -20,9 +20,16 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         //add factory for Property
-       //  \App\Models\Property::factory(10)->create();
+         //\App\Models\Property::factory(10)->create();
         //add factory for Apartment
-            \App\Models\Apartment::factory(10)->create();
+        //\App\Models\Apartment::factory(10)->create();
+        //add factory for ApartmentType
+        // \App\Models\ApartmentType::factory(3)->create();
+        //add factory for Room
+       //  \App\Models\Room::factory(10)->create();
+         //add beds factory
+       // \App\Models\Bed::factory(10)->create();
+        //add mult
 
         // $this->call(RoleSeeder::class);
         // $this->call(AdminUserSeeder::class);
@@ -31,5 +38,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(CountrySeeder::class);
         // $this->call(CitySeeder::class);
         // $this->call(GeoobjectSeeder::class);
+
+       // $this->call(FacilityCategorySeeder::class);
+        $this->call(FacilitySeeder::class);
     }
 }
