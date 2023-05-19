@@ -43,6 +43,11 @@ class Property extends Model
     public function apartments(){
         return $this->hasMany(Apartment::class);
     }
+
+    public function facilities()
+    {
+        return $this->belongsToMany(Facility::class);
+    }
     
 
     public function address(): Attribute
@@ -53,6 +58,9 @@ class Property extends Model
                  . ', ' . $this->city->name
         );
     }
+
+
+    
 
 
 }

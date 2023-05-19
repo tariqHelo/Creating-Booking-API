@@ -29,7 +29,6 @@ class DatabaseSeeder extends Seeder
        //  \App\Models\Room::factory(10)->create();
          //add beds factory
        // \App\Models\Bed::factory(10)->create();
-        //add mult
 
         // $this->call(RoleSeeder::class);
         // $this->call(AdminUserSeeder::class);

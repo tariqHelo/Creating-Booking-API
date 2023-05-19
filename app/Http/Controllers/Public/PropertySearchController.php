@@ -46,17 +46,32 @@ class PropertySearchController extends Controller
                     $query->whereRaw($condition);
                 }
             })
-            ->when($request->adults && $request->children, function($query) use ($request) {
-                $query->withWhereHas('apartments', function($query) use ($request) {
+            ->when($request->adults && $request->children, function ($query) use ($request) {
+                $query->withWhereHas('apartments', function ($query) use ($request) {
                     $query->where('capacity_adults', '>=', $request->adults)
                         ->where('capacity_children', '>=', $request->children);
                 });
             })
+            //search by facilities
+            ->when($request->facilities, function ($query) use ($request) {
+                $query->withWhereHas('facilities', function ($query) use ($request) {
+                    $query->whereIn('name', $request->facilities);
+                });
+            })
             ->get();
 
-           // return $properties;
+        $allFacilities = $properties->pluck('facilities')->flatten();
+        $facilities = $allFacilities->unique('name')
+            ->mapWithKeys(function ($facility) use ($allFacilities) {
+                return [$facility->name => $allFacilities->where('name', $facility->name)->count()];
+            })
+            ->sortDesc();
 
-            return PropertySearchResource::collection($properties);
 
+        // return $properties;
+        return [
+            'properties' => PropertySearchResource::collection($properties),
+            'facilities' => $facilities,
+        ];
     }
 }

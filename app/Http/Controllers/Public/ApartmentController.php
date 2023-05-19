@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Apartment;
 
 use App\Http\Resources\ApartmentDetailsResource;
+use Termwind\Components\Raw;
 
 class ApartmentController extends Controller
 {
@@ -16,17 +17,26 @@ class ApartmentController extends Controller
      * @param  \App\Models\Apartment  $apartment
      * @return \Illuminate\Http\Response
      */
-    public function __invoke(Apartment $apartment)
+    public function __invoke($id)
     {
+        // Find the apartment by ID in the database
+        $apartment = Apartment::find($id);
 
-        dd($apartment);
+        // If the apartment is not found, return 404
+        if (!$apartment) {
+            return response()->json([
+                'message' => 'Apartment not found',
+            ], 404);
+        }
         $apartment->load('facilities.category');
 
         $apartment->setAttribute(
             'facility_categories',
-            $apartment->facilities->groupBy('category.name')->mapWithKeys(fn ($items, $key) => [$key => $items->pluck('name')])
+            $apartment->facilities->groupBy('category.name')
+                ->mapWithKeys(fn ($items, $key) =>
+                [$key => $items->pluck('name')])
         );
- 
+
         return new ApartmentDetailsResource($apartment);
     }
 }
