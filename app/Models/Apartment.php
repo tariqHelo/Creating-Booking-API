@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
+use Carbon\Carbon;
+
 class Apartment extends Model
 {
     use HasFactory;
@@ -44,6 +46,40 @@ class Apartment extends Model
     public function facilities()
     {
         return $this->belongsToMany(Facility::class);
+    }
+
+
+    public function prices()
+    {
+        return $this->hasMany(ApartmentPrice::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+
+    public function calculatePriceForDates($startDate, $endDate)
+    {
+        // Convert to Carbon if not already
+        if (!$startDate instanceof Carbon) {
+            $startDate = Carbon::parse($startDate)->startOfDay();
+        }
+        if (!$endDate instanceof Carbon) {
+            $endDate = Carbon::parse($endDate)->endOfDay();
+        }
+ 
+        $cost = 0;
+ 
+        while ($startDate->lte($endDate)) {
+            $cost += $this->prices->where(function (ApartmentPrice $price) use ($startDate) {
+                return $price->start_date->lte($startDate) && $price->end_date->gte($startDate);
+            })->value('price');
+            $startDate->addDay();
+        }
+ 
+        return $cost;
     }
 
     public function bedsList(): Attribute

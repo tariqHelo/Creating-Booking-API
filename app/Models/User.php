@@ -17,6 +17,11 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+     const ROLE_ADMINISTRATOR = 1;
+     const ROLE_OWNER = 2;
+     const ROLE_USER = 3;
+
     protected $fillable = [
         'name',
         'email',
@@ -52,5 +57,12 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(UserProfile::class);
+    }
+
+
+    
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }

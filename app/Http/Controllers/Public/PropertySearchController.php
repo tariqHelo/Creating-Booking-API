@@ -21,8 +21,19 @@ class PropertySearchController extends Controller
             ->with([
                 'city',
                 'apartments.apartment_type',
-                'apartments.rooms.beds.bed_type'
+                'apartments.rooms.beds.bed_type',
+                'apartments.prices' => function($query) use ($request) {
+                    $query->validForRange([
+                        $request->start_date ?? now()->addDay()->toDateString(),
+                        $request->end_date ?? now()->addDays(2)->toDateString(),
+                    ]);
+                },
+                'facilities',
+                // We add only this eager loading by position here
+                'media' => fn($query) => $query->orderBy('position'),
             ])
+            ->withAvg('bookings', 'rating')
+
             // conditions will come here
             ->when($request->has('city_id'), function ($query) use ($request) {
                 $query->where('city_id', $request->city_id);
@@ -46,10 +57,13 @@ class PropertySearchController extends Controller
                     $query->whereRaw($condition);
                 }
             })
-            ->when($request->adults && $request->children, function ($query) use ($request) {
-                $query->withWhereHas('apartments', function ($query) use ($request) {
+            ->when($request->adults && $request->children, function($query) use ($request) {
+                $query->withWhereHas('apartments', function($query) use ($request) {
                     $query->where('capacity_adults', '>=', $request->adults)
-                        ->where('capacity_children', '>=', $request->children);
+                        ->where('capacity_children', '>=', $request->children)
+                        ->orderBy('capacity_adults')
+                        ->orderBy('capacity_children')
+                        ->take(1);
                 });
             })
             //search by facilities
@@ -58,20 +72,21 @@ class PropertySearchController extends Controller
                     $query->whereIn('name', $request->facilities);
                 });
             })
+            ->orderBy('bookings_avg_rating', 'desc')
             ->get();
 
-        $allFacilities = $properties->pluck('facilities')->flatten();
-        $facilities = $allFacilities->unique('name')
-            ->mapWithKeys(function ($facility) use ($allFacilities) {
-                return [$facility->name => $allFacilities->where('name', $facility->name)->count()];
-            })
-            ->sortDesc();
+        // $allFacilities = $properties->pluck('facilities')->flatten();
+        // $facilities = $allFacilities->unique('name')
+        //     ->mapWithKeys(function ($facility) use ($allFacilities) {
+        //         return [$facility->name => $allFacilities->where('name', $facility->name)->count()];
+        //     })
+        //     ->sortDesc();
 
 
         // return $properties;
         return [
             'properties' => PropertySearchResource::collection($properties),
-            'facilities' => $facilities,
+            // 'facilities' => $facilities,
         ];
     }
 }

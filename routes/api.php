@@ -22,24 +22,42 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('auth/register', App\Http\Controllers\Auth\RegisterController::class);
 //add login route
+Route::post('auth/login', App\Http\Controllers\Auth\LoginController::class);
 
 
 Route::middleware('auth:sanctum')->group(function () {
     // No owner/user grouping, for now, will do it later with more routes
     Route::prefix('owner')->group(function () {
-        Route::get('properties',
-            [\App\Http\Controllers\Owner\PropertyController::class, 'index']);
-        Route::post('properties',
-            [\App\Http\Controllers\Owner\PropertyController::class, 'store']);
+        Route::get(
+            'properties',
+            [\App\Http\Controllers\Owner\PropertyController::class, 'index']
+        );
+        Route::post(
+            'properties',
+            [\App\Http\Controllers\Owner\PropertyController::class, 'store']
+        );
+
+        //add property photo route
+        Route::post(
+            'properties/{property}/photos',
+            [\App\Http\Controllers\Owner\PropertyPhotoController::class, 'store']
+        );
+        //add property photo reorder route
+        Route::post(
+            'properties/{property}/photos/{photo}/reorder/{newPosition}',
+            [\App\Http\Controllers\Owner\PropertyPhotoController::class, 'reorder']
+        );
     });
-    
+
     //Routes for user
     Route::prefix('user')->group(function () {
-        Route::get('bookings',
-            [\App\Http\Controllers\User\BookingController::class, 'index']);
+        Route::resource('bookings', \App\Http\Controllers\User\BookingController::class);
     });
 });
+
 //Public routes
 Route::get('search', Public\PropertySearchController::class);
+//Get properties by id
 Route::get('properties/{property}', Public\PropertyController::class);
+//Get apartments by id
 Route::get('apartments/{apartment}', Public\ApartmentController::class);
