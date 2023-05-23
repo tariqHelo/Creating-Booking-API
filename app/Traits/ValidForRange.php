@@ -1,34 +1,9 @@
 <?php
 
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Traits\ValidForRange;
-
-class ApartmentPrice extends Model
-{
-    use HasFactory, ValidForRange;
-
-    protected $fillable = [
-        'apartment_id',
-        'price',
-        'start_date',
-        'end_date',
-    ]; 
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-    ];
-
-
-
-    // public function apartment()
-    // {
-    //     return $this->belongsTo(Apartment::class);
-    // }
-
-
+namespace App\Traits;
+ 
+trait ValidForRange {
+ 
     public function scopeValidForRange($query, array $range = [])
     {
         return $query->where(function ($query) use ($range) {
@@ -47,6 +22,6 @@ class ApartmentPrice extends Model
                         ->where('end_date', '>=', end($range));
                 });
         });
-       
     }
+ 
 }

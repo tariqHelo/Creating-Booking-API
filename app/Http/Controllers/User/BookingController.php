@@ -11,15 +11,22 @@ use App\Http\Resources\BookingResource;
 
 use App\Models\Booking;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 
 class BookingController extends Controller
 {
 
     public function index()
     {
-       
+       //dd(auth()->user()->role_id, auth()->user()->role->name, auth()->user()->role->permissions);
         //check if user is has permission to manage bookings
-       // $this->authorize('bookings-manage');
+         //dd(auth()->user()->role_id, auth()->id());
+        
+         //check if user is has permission to manage bookings
+         if (Gate::denies('bookings-manage')) {
+            abort(403);
+        }
+        
         
         //get all bookings with property and apartment with trashed
         $bookings = auth()->user()->bookings()
@@ -84,4 +91,7 @@ class BookingController extends Controller
 
         return response()->noContent();
     }
+
+
+
 }

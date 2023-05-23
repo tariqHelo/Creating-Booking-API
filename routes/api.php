@@ -3,6 +3,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Public;
+use App\Http\Controllers\Owner\PropertyPhotoController;
+use App\Http\Controllers\User\BookingController;
+use App\Http\Controllers\Owner\PropertyController;
+use App\Http\Controllers\Public\PropertySearchController;
+use App\Http\Controllers\Public\PropertyController as PublicPropertyController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,35 +35,20 @@ Route::post('auth/login', App\Http\Controllers\Auth\LoginController::class);
 Route::middleware('auth:sanctum')->group(function () {
     // No owner/user grouping, for now, will do it later with more routes
     Route::prefix('owner')->group(function () {
-        Route::get(
-            'properties',
-            [\App\Http\Controllers\Owner\PropertyController::class, 'index']
-        );
-        Route::post(
-            'properties',
-            [\App\Http\Controllers\Owner\PropertyController::class, 'store']
-        );
-
-        //add property photo route
-        Route::post(
-            'properties/{property}/photos',
-            [\App\Http\Controllers\Owner\PropertyPhotoController::class, 'store']
-        );
-        //add property photo reorder route
-        Route::post(
-            'properties/{property}/photos/{photo}/reorder/{newPosition}',
-            [\App\Http\Controllers\Owner\PropertyPhotoController::class, 'reorder']
-        );
+        //...
+    
+        Route::post('properties/{property}/photos', [PropertyPhotoController::class, 'store']);
+        Route::post('properties/{property}/photos/{photo}/reorder/{newPosition}', [PropertyPhotoController::class, 'reorder']);
     });
 
     //Routes for user
     Route::prefix('user')->group(function () {
-        Route::resource('bookings', \App\Http\Controllers\User\BookingController::class);
+        Route::resource('bookings', BookingController::class);
     });
 });
 
 //Public routes
-Route::get('search', Public\PropertySearchController::class);
+Route::get('search', PropertySearchController::class);
 //Get properties by id
 Route::get('properties/{property}', Public\PropertyController::class);
 //Get apartments by id

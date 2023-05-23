@@ -27,7 +27,6 @@ class PropertySearchResource extends JsonResource
             'photos' => $this->media->map(fn($media) => $media->getUrl('thumbnail')),
             // 'price' => $this->calculatePriceForDates($request->start_date, $request->end_date)
             'avg_rating' => $this->bookings_avg_rating,
-
         ];
      }
 }

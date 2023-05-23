@@ -30,7 +30,9 @@ class DatabaseSeeder extends Seeder
          //add beds factory
        // \App\Models\Bed::factory(10)->create();
         //add factory for ApartmentPrice
-         \App\Models\ApartmentPrice::factory(10)->create();
+         //\App\Models\ApartmentPrice::factory(10)->create();
+        //add factory for Booking
+         \App\Models\Booking::factory(10)->create();
 
         // $this->call(RoleSeeder::class);
         // $this->call(AdminUserSeeder::class);

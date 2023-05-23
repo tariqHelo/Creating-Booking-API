@@ -75,6 +75,8 @@ class PropertySearchController extends Controller
             ->orderBy('bookings_avg_rating', 'desc')
             ->get();
 
+            
+
         // $allFacilities = $properties->pluck('facilities')->flatten();
         // $facilities = $allFacilities->unique('name')
         //     ->mapWithKeys(function ($facility) use ($allFacilities) {
