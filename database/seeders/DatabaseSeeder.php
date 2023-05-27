@@ -20,19 +20,10 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         //add factory for Property
-         //\App\Models\Property::factory(10)->create();
-        //add factory for Apartment
-        //\App\Models\Apartment::factory(10)->create();
-        //add factory for ApartmentType
-        // \App\Models\ApartmentType::factory(3)->create();
-        //add factory for Room
-       //  \App\Models\Room::factory(10)->create();
-         //add beds factory
-       // \App\Models\Bed::factory(10)->create();
-        //add factory for ApartmentPrice
-         //\App\Models\ApartmentPrice::factory(10)->create();
-        //add factory for Booking
-         \App\Models\Booking::factory(10)->create();
+       //  \App\Models\Facility::factory(10)->create();
+         //add Bid factory
+          \App\Models\Bed::factory(10)->create();
+  
 
         // $this->call(RoleSeeder::class);
         // $this->call(AdminUserSeeder::class);

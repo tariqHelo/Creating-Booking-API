@@ -9,17 +9,12 @@ class Facility extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'facility_category_id',
-        'name',
-    ];
-
+    protected $fillable = ['category_id', 'name'];
 
     public function category()
     {
-        return $this->belongsTo(FacilityCategory::class, 'facility_category_id');
+        return $this->belongsTo(FacilityCategory::class, 'category_id');
     }
-
 
     public function properties()
     {

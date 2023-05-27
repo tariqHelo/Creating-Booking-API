@@ -2,11 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use App\Models\Permission;
-
 use Illuminate\Support\Facades\Gate;
 
 class GateDefineMiddleware
@@ -14,20 +14,20 @@ class GateDefineMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next): Response
-    {  
-        
-        if(auth()->check()){
-            $permissions = Permission::whereHas('roles', function($query){
+    public function handle(Request $request, Closure $next)
+    {
+        if (auth()->check()) {
+            $permissions = Permission::whereHas('roles', function($query) {
                 $query->where('id', auth()->user()->role_id);
-            });
+            })->get();
 
-            foreach($permissions as $permission){
+            foreach ($permissions as $permission) {
                 Gate::define($permission->name, fn() => true);
             }
-
         }
 
         return $next($request);

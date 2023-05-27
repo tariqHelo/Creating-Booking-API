@@ -50,7 +50,7 @@ class BookingController extends Controller
 
         $booking->update($request->validated());
 
-      //  dispatch(new UpdatePropertyRatingJob($booking));
+        dispatch(new UpdatePropertyRatingJob($booking));
 
         return new BookingResource($booking);
     }

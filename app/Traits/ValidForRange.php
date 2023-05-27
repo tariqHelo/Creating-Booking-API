@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Traits;
- 
+
 trait ValidForRange {
- 
+
     public function scopeValidForRange($query, array $range = [])
     {
         return $query->where(function ($query) use ($range) {
@@ -23,5 +23,5 @@ trait ValidForRange {
                 });
         });
     }
- 
+
 }

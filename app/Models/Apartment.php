@@ -2,25 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-
-use Carbon\Carbon;
+use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 class Apartment extends Model
 {
-    use HasFactory;
+    use HasEagerLimit;
 
     protected $fillable = [
         'property_id',
-        'apartment_type_id', 
+        'apartment_type_id',
         'name',
         'capacity_adults',
         'capacity_children',
-        'size', 
+        'size',
         'bathrooms',
     ];
+
+    use HasFactory;
 
     public function property()
     {
@@ -37,49 +38,9 @@ class Apartment extends Model
         return $this->hasMany(Room::class);
     }
 
-
     public function beds()
     {
         return $this->hasManyThrough(Bed::class, Room::class);
-    }
-
-    public function facilities()
-    {
-        return $this->belongsToMany(Facility::class);
-    }
-
-
-    public function prices()
-    {
-        return $this->hasMany(ApartmentPrice::class);
-    }
-
-    public function bookings()
-    {
-        return $this->hasMany(Booking::class);
-    }
-
-
-    public function calculatePriceForDates($startDate, $endDate)
-    {
-        // Convert to Carbon if not already
-        if (!$startDate instanceof Carbon) {
-            $startDate = Carbon::parse($startDate)->startOfDay();
-        }
-        if (!$endDate instanceof Carbon) {
-            $endDate = Carbon::parse($endDate)->endOfDay();
-        }
- 
-        $cost = 0;
- 
-        while ($startDate->lte($endDate)) {
-            $cost += $this->prices->where(function (ApartmentPrice $price) use ($startDate) {
-                return $price->start_date->lte($startDate) && $price->end_date->gte($startDate);
-            })->value('price');
-            $startDate->addDay();
-        }
- 
-        return $cost;
     }
 
     public function bedsList(): Attribute
@@ -97,12 +58,24 @@ class Apartment extends Model
             }
             $bedsList .= ' ('.implode(', ' , $bedsListArray) .')';
         }
- 
+
         return new Attribute(
             get: fn () => $bedsList
         );
     }
 
+    public function facilities()
+    {
+        return $this->belongsToMany(Facility::class);
+    }
 
+    public function prices()
+    {
+        return $this->hasMany(ApartmentPrice::class);
+    }
 
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

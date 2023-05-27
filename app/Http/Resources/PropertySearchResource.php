@@ -5,9 +5,6 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-
-
-
 class PropertySearchResource extends JsonResource
 {
     /**
@@ -25,8 +22,7 @@ class PropertySearchResource extends JsonResource
             'long' => $this->long,
             'apartments' => ApartmentSearchResource::collection($this->apartments),
             'photos' => $this->media->map(fn($media) => $media->getUrl('thumbnail')),
-            // 'price' => $this->calculatePriceForDates($request->start_date, $request->end_date)
             'avg_rating' => $this->bookings_avg_rating,
         ];
-     }
+    }
 }

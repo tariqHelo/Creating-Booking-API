@@ -27,13 +27,16 @@ class FacilityFactory extends Factory
         //add fake date for facility_property table
 
         //add fake date for facility table
-        // $facility = Facility::create([
-        //     'facility_category_id' => rand(1, 10),
-        //     'name' => $this->faker->text(20),
-        // ]);
+        $facility = Facility::create([
+            'category_id' => rand(1, 10),
+            'name' => 'TV'
+        ]);
+        //add Bid fac
 
         //add fake date for facility_property table
-        $facility->properties()->attach(rand(1, 10));
+      //  $facility->properties()->attach(rand(1, 10));
+        //add fake date for facility_category table
+       // $facility->facilityCategory()->attach(['name' => $this->faker->randomElement(['TV', 'Internet', 'Parking', 'Kitchen'])
 
     }
 }

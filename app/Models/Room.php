@@ -9,18 +9,7 @@ class Room extends Model
 {
     use HasFactory;
 
-
-    protected $fillable = [
-        'name',
-        'apartment_id',
-        'room_type_id',
-    ];
-
-
-    public function apartment()
-    {
-        return $this->belongsTo(Apartment::class);
-    }
+    protected $fillable = ['apartment_id', 'room_type_id', 'name'];
 
     public function room_type()
     {
@@ -31,5 +20,4 @@ class Room extends Model
     {
         return $this->hasMany(Bed::class);
     }
-
 }

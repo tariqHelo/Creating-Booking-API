@@ -20,7 +20,8 @@ class BedFactory extends Factory
             
             'room_id' => rand(1, 10),
             'bed_type_id' => rand(1, 4),
-            'name' => $this->faker->word,
+            'name' => $this->faker->randomElement(['Single bed', 'Double bed',
+             'King size bed', 'Sofa bed']),
 
         ];
     }

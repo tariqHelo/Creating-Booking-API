@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class UpdateBookingRequest extends FormRequest
 {
@@ -12,19 +13,18 @@ class UpdateBookingRequest extends FormRequest
     public function authorize(): bool
     {
         return Gate::allows('bookings-manage');
-
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
     public function rules(): array
     {
         return [
-            'rating' => ['required', 'integer', 'min:1', 'max:5'],
-            'review_comment' => ['required', 'string', 'max:255'],
+            'rating' => 'integer|between:1,10',
+            'review_comment' => 'min:20',
         ];
     }
 }

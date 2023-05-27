@@ -3,25 +3,21 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
-use App\Models\Property;
-use Generator;
-use App\Models\Geoobject;
-
 use App\Http\Resources\PropertySearchResource;
+use App\Models\Facility;
+use App\Models\Geoobject;
+use App\Models\Property;
+use Illuminate\Http\Request;
 
 class PropertySearchController extends Controller
 {
     public function __invoke(Request $request)
     {
-
-        //dd($request->all());
-        $properties = Property::query()
+        $propertiesQuery = Property::query()
             ->with([
                 'city',
                 'apartments.apartment_type',
-                'apartments.rooms.beds.bed_type',
+                'apartments.beds.bed_type',
                 'apartments.prices' => function($query) use ($request) {
                     $query->validForRange([
                         $request->start_date ?? now()->addDay()->toDateString(),
@@ -29,21 +25,18 @@ class PropertySearchController extends Controller
                     ]);
                 },
                 'facilities',
-                // We add only this eager loading by position here
                 'media' => fn($query) => $query->orderBy('position'),
             ])
-            ->withAvg('bookings', 'rating')
-
-            // conditions will come here
-            ->when($request->has('city_id'), function ($query) use ($request) {
-                $query->where('city_id', $request->city_id);
+            //Search by City 
+            ->when($request->city, function($query) use ($request) {
+                $query->where('city_id', $request->city);
             })
-            //get all properties in a country
-            ->when($request->country, function ($query) use ($request) {
-                $query->whereHas('city', fn ($q) => $q->where('country_id', $request->country));
+            //Search by Country
+            ->when($request->country, function($query) use ($request) {
+                $query->whereHas('city', fn($q) => $q->where('country_id', $request->country));
             })
-            //Search by Geographical Object, within 10km
-            ->when($request->geoobject, function ($query) use ($request) {
+            //Search by Geoobject
+            ->when($request->geoobject, function($query) use ($request) {
                 $geoobject = Geoobject::find($request->geoobject);
                 if ($geoobject) {
                     $condition = "(
@@ -57,38 +50,59 @@ class PropertySearchController extends Controller
                     $query->whereRaw($condition);
                 }
             })
+            //Search by adults and children
             ->when($request->adults && $request->children, function($query) use ($request) {
                 $query->withWhereHas('apartments', function($query) use ($request) {
                     $query->where('capacity_adults', '>=', $request->adults)
                         ->where('capacity_children', '>=', $request->children)
+                        ->when($request->start_date && $request->end_date, function($query) use ($request) {
+                            $query->whereDoesntHave('bookings', function($q) use ($request) {
+                                $q->validForRange([$request->start_date, $request->end_date]);
+                            });
+                        })
                         ->orderBy('capacity_adults')
                         ->orderBy('capacity_children')
                         ->take(1);
                 });
             })
-            //search by facilities
-            ->when($request->facilities, function ($query) use ($request) {
-                $query->withWhereHas('facilities', function ($query) use ($request) {
-                    $query->whereIn('name', $request->facilities);
+            //Search by facilities
+            ->when($request->facilities, function($query) use ($request) {
+                $query->whereHas('facilities', function($query) use ($request) {
+                    $query->whereIn('facilities.id', $request->facilities);
                 });
             })
+            //Search by price
+            ->when($request->price_from, function($query) use ($request) {
+                $query->whereHas('apartments.prices', function($query) use ($request) {
+                    $query->where('price', '>=', $request->price_from);
+                });
+            })
+            //Search by price
+            ->when($request->price_to, function($query) use ($request) {
+                $query->whereHas('apartments.prices', function($query) use ($request) {
+                    $query->where('price', '<=', $request->price_to);
+                });
+            });
+
+        $facilities = Facility::query()
+            ->withCount(['properties' => function ($property) use ($propertiesQuery) {
+                $property->whereIn('id', $propertiesQuery->pluck('id'));
+            }])
+            ->get()
+            ->where('properties_count', '>', 0)
+            ->sortByDesc('properties_count')
+            ->pluck('properties_count', 'name');
+
+        $properties = $propertiesQuery
             ->orderBy('bookings_avg_rating', 'desc')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
-            
-
-        // $allFacilities = $properties->pluck('facilities')->flatten();
-        // $facilities = $allFacilities->unique('name')
-        //     ->mapWithKeys(function ($facility) use ($allFacilities) {
-        //         return [$facility->name => $allFacilities->where('name', $facility->name)->count()];
-        //     })
-        //     ->sortDesc();
-
-
-        // return $properties;
         return [
-            'properties' => PropertySearchResource::collection($properties),
-            // 'facilities' => $facilities,
+            'properties' => PropertySearchResource::collection($properties)
+                ->response()
+                ->getData(true),
+            'facilities' => $facilities,
         ];
     }
 }
